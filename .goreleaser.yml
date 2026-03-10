@@ -1,0 +1,58 @@
+version: 2
+project_name: promptrails
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - main: ./cmd/promptrails
+    binary: promptrails
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w -X github.com/promptrails/cli/internal/cmd.Version={{.Version}}
+
+archives:
+  - format: tar.gz
+    name_template: "{{ .ProjectName }}-{{ .Os }}-{{ .Arch }}"
+    format_overrides:
+      - goos: windows
+        format: zip
+
+checksum:
+  name_template: checksums.txt
+
+brews:
+  - repository:
+      owner: promptrails
+      name: homebrew-tap
+      token: "{{ .Env.HOMEBREW_TAP_TOKEN }}"
+    name: promptrails
+    homepage: https://github.com/promptrails/cli
+    description: CLI for the PromptRails AI agent orchestration platform
+    license: MIT
+    install: |
+      bin.install "promptrails"
+    test: |
+      system "#{bin}/promptrails", "version"
+
+release:
+  github:
+    owner: promptrails
+    name: cli
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^ci:"
