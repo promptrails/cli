@@ -15,7 +15,7 @@ var (
 )
 
 func init() {
-	credCreateCmd.Flags().StringVar(&credProvider, "provider", "", "Provider (openai, anthropic, google_genai, deepseek, fireworks, xai, openrouter)")
+	credCreateCmd.Flags().StringVar(&credProvider, "provider", "", "Provider (openai, anthropic, gemini, deepseek, fireworks, xai, openrouter)")
 	credCreateCmd.Flags().StringVar(&credName, "name", "", "Credential name")
 	_ = credCreateCmd.MarkFlagRequired("provider")
 	_ = credCreateCmd.MarkFlagRequired("name")
