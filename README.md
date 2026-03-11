@@ -96,6 +96,31 @@ promptrails apikey create --name "CI"     # Displays the key once
 promptrails apikey delete <id>
 ```
 
+### Media Studio
+
+```bash
+promptrails media generate --provider stability --media-type image_gen --model sd3.5-large --prompt "A sunset"
+promptrails media generate --provider elevenlabs --media-type tts --model eleven_multilingual_v2 --prompt "Hello" --config voice_id=21m00Tcm4TlvDq8ikWAM
+```
+
+### Assets
+
+```bash
+promptrails assets list                          # List all assets
+promptrails assets list --type image             # Filter by type
+promptrails assets get <id>                      # Get details
+promptrails assets signed-url <id>               # Get download URL
+promptrails assets delete <id>                   # Delete
+```
+
+### Media Models
+
+```bash
+promptrails media-models list                    # List all media models
+promptrails media-models list --provider fal     # Filter by provider
+promptrails media-models list --media-type tts   # Filter by media type
+```
+
 ### Webhook Triggers
 
 ```bash
