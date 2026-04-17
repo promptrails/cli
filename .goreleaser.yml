@@ -30,19 +30,11 @@ archives:
 checksum:
   name_template: checksums.txt
 
-brews:
-  - repository:
-      owner: promptrails
-      name: homebrew-tap
-      token: "{{ .Env.HOMEBREW_TAP_TOKEN }}"
-    name: promptrails
-    homepage: https://github.com/promptrails/cli
-    description: CLI for the PromptRails AI agent orchestration platform
-    license: MIT
-    install: |
-      bin.install "promptrails"
-    test: |
-      system "#{bin}/promptrails", "version"
+# Homebrew tap is updated manually from the published release artifacts.
+# The brews: automation was removed because the tap PR flow is fragile and
+# the token rotates often — keeping it in CI breaks the whole release job
+# on every rotation. Update promptrails/homebrew-tap/promptrails.rb by hand
+# after each tag.
 
 release:
   github:
