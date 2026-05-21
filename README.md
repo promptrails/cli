@@ -121,15 +121,18 @@ promptrails media-models list --provider fal     # Filter by provider
 promptrails media-models list --media-type tts   # Filter by media type
 ```
 
-### Webhook Triggers
+### Agent Triggers
 
 ```bash
-promptrails webhook-trigger list
-promptrails wt get <trigger-id>
-promptrails wt create --name "GitHub" --agent-id <id>
-promptrails wt update <trigger-id> --active
-promptrails wt delete <trigger-id>
+promptrails agent-trigger list
+promptrails at get <trigger-id>
+promptrails at create --name "GitHub" --agent-id <id> --source generic
+promptrails at create --name "Slack #ops" --agent-id <id> --source slack
+promptrails at update <trigger-id> --active
+promptrails at delete <trigger-id>
 ```
+
+The `--source` flag selects the inbound channel — `generic` (default), `slack`, `telegram`, `whatsapp`, `teams`, or `schedule`. The legacy `webhook-trigger` / `wt` command names still work as aliases.
 
 ### Shell Completion
 
