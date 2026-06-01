@@ -5,7 +5,7 @@ go 1.26.3
 require (
 	github.com/charmbracelet/huh v0.6.0
 	github.com/charmbracelet/lipgloss v1.1.0
-	github.com/promptrails/go-sdk v0.4.0
+	github.com/promptrails/go-sdk v0.5.0
 	github.com/spf13/cobra v1.8.1
 )
 
