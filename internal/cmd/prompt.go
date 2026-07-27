@@ -13,9 +13,6 @@ var (
 	promptName        string
 	promptDescription string
 	promptStatus      string
-	promptInput       string
-	promptInputFile   string
-	promptUserPrompt  string
 	promptPage        int
 )
 
@@ -30,16 +27,11 @@ func init() {
 	promptUpdateCmd.Flags().StringVar(&promptName, "name", "", "New name")
 	promptUpdateCmd.Flags().StringVar(&promptDescription, "description", "", "New description")
 
-	promptRunCmd.Flags().StringVar(&promptInput, "input", "", "Input JSON string")
-	promptRunCmd.Flags().StringVar(&promptInputFile, "input-file", "", "Path to input JSON file")
-	promptRunCmd.Flags().StringVar(&promptUserPrompt, "user-prompt", "", "User prompt text")
-
 	promptCmd.AddCommand(promptListCmd)
 	promptCmd.AddCommand(promptGetCmd)
 	promptCmd.AddCommand(promptCreateCmd)
 	promptCmd.AddCommand(promptUpdateCmd)
 	promptCmd.AddCommand(promptDeleteCmd)
-	promptCmd.AddCommand(promptRunCmd)
 	promptCmd.AddCommand(promptVersionsCmd)
 	promptCmd.AddCommand(promptPromoteCmd)
 	rootCmd.AddCommand(promptCmd)
@@ -77,8 +69,8 @@ var promptListCmd = &cobra.Command{
 		}
 		output.Table([]string{"ID", "NAME", "STATUS"}, rows)
 
-		if resp.Meta.TotalPages > 1 {
-			output.Info(fmt.Sprintf("Page %d of %d (%d total)", resp.Meta.Page, resp.Meta.TotalPages, resp.Meta.Total))
+		if resp.Meta.Pages > 1 {
+			output.Info(fmt.Sprintf("Page %d of %d (%d total)", resp.Meta.Page, resp.Meta.Pages, resp.Meta.Total))
 		}
 		return nil
 	},
@@ -208,38 +200,6 @@ var promptDeleteCmd = &cobra.Command{
 		}
 
 		output.Success("Prompt deleted.")
-		return nil
-	},
-}
-
-var promptRunCmd = &cobra.Command{
-	Use:   "run <prompt-id>",
-	Short: "Run a prompt",
-	Args:  cobra.ExactArgs(1),
-	RunE: func(cmd *cobra.Command, args []string) error {
-		client, err := requireAuth()
-		if err != nil {
-			return err
-		}
-
-		inputData, err := parseInputJSON(promptInput, promptInputFile)
-		if err != nil {
-			return err
-		}
-
-		resp, err := client.Prompts.Run(cmdContext(), args[0], &promptrails.RunPromptParams{
-			UserPrompt: promptUserPrompt,
-			Input:      inputData,
-		})
-		if err != nil {
-			return err
-		}
-
-		if getOutputFormat() == output.FormatJSON {
-			return output.JSON(resp)
-		}
-
-		fmt.Println(resp.Output)
 		return nil
 	},
 }

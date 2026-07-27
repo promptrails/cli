@@ -95,8 +95,8 @@ var atListCmd = &cobra.Command{
 		}
 		output.Table([]string{"ID", "NAME", "SOURCE", "TOKEN", "ACTIVE", "SECRET", "LAST USED"}, rows)
 
-		if resp.Meta.TotalPages > 1 {
-			output.Info(fmt.Sprintf("Page %d of %d (%d total)", resp.Meta.Page, resp.Meta.TotalPages, resp.Meta.Total))
+		if resp.Meta.Pages > 1 {
+			output.Info(fmt.Sprintf("Page %d of %d (%d total)", resp.Meta.Page, resp.Meta.Pages, resp.Meta.Total))
 		}
 		return nil
 	},

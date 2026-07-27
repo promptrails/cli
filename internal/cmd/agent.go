@@ -21,12 +21,12 @@ var (
 )
 
 func init() {
-	agentListCmd.Flags().StringVar(&agentType, "type", "", "Filter by type (simple, chain, multi_agent, workflow, composite)")
+	agentListCmd.Flags().StringVar(&agentType, "type", "", "Filter by type (agent, workflow)")
 	agentListCmd.Flags().StringVar(&agentName, "name", "", "Filter by name")
 	agentListCmd.Flags().IntVar(&agentPage, "page", 1, "Page number")
 
 	agentCreateCmd.Flags().StringVar(&agentName, "name", "", "Agent name (required)")
-	agentCreateCmd.Flags().StringVar(&agentType, "type", "simple", "Agent type")
+	agentCreateCmd.Flags().StringVar(&agentType, "type", "agent", "Agent type: agent | workflow")
 	agentCreateCmd.Flags().StringVar(&agentDescription, "description", "", "Agent description")
 	_ = agentCreateCmd.MarkFlagRequired("name")
 
@@ -81,8 +81,8 @@ var agentListCmd = &cobra.Command{
 		}
 		output.Table([]string{"ID", "NAME", "TYPE", "STATUS"}, rows)
 
-		if resp.Meta.TotalPages > 1 {
-			output.Info(fmt.Sprintf("Page %d of %d (%d total)", resp.Meta.Page, resp.Meta.TotalPages, resp.Meta.Total))
+		if resp.Meta.Pages > 1 {
+			output.Info(fmt.Sprintf("Page %d of %d (%d total)", resp.Meta.Page, resp.Meta.Pages, resp.Meta.Total))
 		}
 		return nil
 	},
@@ -127,6 +127,10 @@ var agentCreateCmd = &cobra.Command{
 		client, err := requireAuth()
 		if err != nil {
 			return err
+		}
+
+		if agentType != "agent" && agentType != "workflow" {
+			return fmt.Errorf("invalid --type %q: must be 'agent' or 'workflow'", agentType)
 		}
 
 		agent, err := client.Agents.Create(cmdContext(), &promptrails.CreateAgentParams{
