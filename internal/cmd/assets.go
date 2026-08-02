@@ -64,8 +64,8 @@ var assetsListCmd = &cobra.Command{
 		}
 		output.Table([]string{"ID", "FILE NAME", "CONTENT TYPE", "PROVIDER", "SIZE", "CREATED"}, rows)
 
-		if resp.Meta.TotalPages > 1 {
-			output.Info(fmt.Sprintf("Page %d of %d (%d total)", resp.Meta.Page, resp.Meta.TotalPages, resp.Meta.Total))
+		if resp.Meta.Pages > 1 {
+			output.Info(fmt.Sprintf("Page %d of %d (%d total)", resp.Meta.Page, resp.Meta.Pages, resp.Meta.Total))
 		}
 		return nil
 	},

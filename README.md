@@ -49,16 +49,21 @@ promptrails version           # Show CLI version
 ### Agents
 
 ```bash
-promptrails agent list                           # List agents
-promptrails agent list --type simple             # Filter by type
-promptrails agent get <id>                       # Get details
-promptrails agent create --name "My Agent"       # Create
-promptrails agent update <id> --name "New Name"  # Update
-promptrails agent delete <id>                    # Delete
+promptrails agent list                                  # List agents
+promptrails agent list --type workflow                  # Filter by type (agent | workflow)
+promptrails agent get <id>                              # Get details
+promptrails agent create --name "My Agent" --type agent # Create (type: agent | workflow)
+promptrails agent update <id> --name "New Name"         # Update
+promptrails agent delete <id>                           # Delete
 promptrails agent execute <id> --input '{"q": "hello"}'
-promptrails agent versions <id>                  # List versions
-promptrails agent promote <id> <version-id>      # Set current version
+promptrails agent versions <id>                         # List versions
+promptrails agent promote <id> <version-id>             # Set current version
 ```
+
+Agents come in exactly two kinds: `agent` (a single prompt, optionally extended
+with tools and sub-agents) and `workflow` (a deterministic DAG). Model,
+sampling, run budget, approval policy and attached tools live on the agent
+_version_, not on the agent or the prompt.
 
 ### Prompts
 
@@ -66,17 +71,33 @@ promptrails agent promote <id> <version-id>      # Set current version
 promptrails prompt list
 promptrails prompt get <id>
 promptrails prompt create --name "My Prompt"
-promptrails prompt run <id> --user-prompt "Hello"
 promptrails prompt versions <id>
 promptrails prompt promote <id> <version-id>
 ```
 
+Prompts are content-only (system/user text + input schema). To run a prompt,
+attach it to an agent version and execute the agent.
+
 ### Executions
 
 ```bash
-promptrails execution list                # List executions
-promptrails execution list --agent <id>   # Filter by agent
-promptrails execution get <id>            # Get details
+promptrails execution list                       # List executions
+promptrails execution list --agent <id>          # Filter by agent
+promptrails execution list --status waiting_approval
+promptrails execution get <id>                   # Get details
+promptrails execution tree <id>                  # Show the full sub-execution tree
+promptrails execution cancel <id>                # Request cooperative cancellation
+```
+
+#### Approvals (execution-scoped)
+
+Approval-gated tool calls park the execution at `waiting_approval`. Resolve them
+from the execution itself:
+
+```bash
+promptrails execution approval-inbox             # List runs waiting on approval
+promptrails execution approve <id> --reason "ok" # Approve and resume
+promptrails execution deny <id> --reason "no"    # Deny and resume with a denial
 ```
 
 ### Credentials
@@ -96,11 +117,14 @@ promptrails apikey create --name "CI"     # Displays the key once
 promptrails apikey delete <id>
 ```
 
-### Media Studio
+### Traces
 
 ```bash
-promptrails media generate --provider stability --media-type image_gen --model sd3.5-large --prompt "A sunset"
-promptrails media generate --provider elevenlabs --media-type tts --model eleven_multilingual_v2 --prompt "Hello" --config voice_id=21m00Tcm4TlvDq8ikWAM
+promptrails trace summary                         # Aggregate token/cost/latency stats
+promptrails trace summary --from 2026-07-01 --to 2026-07-31 --agent <id>
+promptrails trace list                            # List trace spans
+promptrails trace list --kind llm                 # Filter by span kind
+promptrails trace get <trace-id>                  # All spans for a trace ID
 ```
 
 ### Assets
@@ -111,14 +135,6 @@ promptrails assets list --type image             # Filter by type
 promptrails assets get <id>                      # Get details
 promptrails assets signed-url <id>               # Get download URL
 promptrails assets delete <id>                   # Delete
-```
-
-### Media Models
-
-```bash
-promptrails media-models list                    # List all media models
-promptrails media-models list --provider fal     # Filter by provider
-promptrails media-models list --media-type tts   # Filter by media type
 ```
 
 ### Agent Triggers
