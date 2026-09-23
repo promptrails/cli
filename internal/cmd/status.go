@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/promptrails/cli/internal/config"
 	"github.com/promptrails/cli/internal/output"
@@ -30,8 +31,7 @@ var statusCmd = &cobra.Command{
 		output.KeyValue("Output Format", cfg.OutputFormat)
 
 		if creds.IsLoggedIn() {
-			masked := creds.APIKey[:10] + "..." + creds.APIKey[len(creds.APIKey)-4:]
-			output.KeyValue("API Key", masked)
+			output.KeyValue("API Key", maskSecret(creds.APIKey))
 		} else {
 			output.KeyValue("Auth", "Not configured — run 'promptrails init'")
 		}
@@ -49,4 +49,16 @@ var statusCmd = &cobra.Command{
 		fmt.Println()
 		return nil
 	},
+}
+
+// maskSecret renders a credential as its last four characters: enough to tell
+// which key is configured, little enough that a screenshot or a shoulder does
+// not give it away. It also handles a key shorter than that, which the
+// previous fixed-width slice would have panicked on.
+func maskSecret(secret string) string {
+	const shown = 4
+	if len(secret) <= shown {
+		return strings.Repeat("*", len(secret))
+	}
+	return "..." + secret[len(secret)-shown:]
 }
