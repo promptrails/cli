@@ -1,6 +1,6 @@
 module github.com/promptrails/cli
 
-go 1.27.0
+go 1.27.2
 
 require (
 	github.com/charmbracelet/huh v0.8.0
